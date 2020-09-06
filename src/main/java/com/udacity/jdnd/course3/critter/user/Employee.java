@@ -1,19 +1,18 @@
 package com.udacity.jdnd.course3.critter.user;
 
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import javax.persistence.*;
 import java.time.DayOfWeek;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 public class Employee {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
@@ -22,8 +21,9 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private Set<EmployeeSkill> skills;
 
-    @ElementCollection
-    private Set<DayOfWeek> daysAvailable;
+    @ElementCollection(targetClass = DayOfWeek.class)
+    @Enumerated(EnumType.STRING)
+    private Set<DayOfWeek> daysAvailable = new HashSet<>();
 
     public Set<EmployeeSkill> getSkills() {
         return skills;

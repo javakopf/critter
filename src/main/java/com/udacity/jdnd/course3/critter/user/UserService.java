@@ -145,4 +145,15 @@ public class UserService {
         }
         return new ArrayList<>();
     }
+
+    public List<EmployeeDTO> getAllEmployees() {
+        List<EmployeeDTO> result = new ArrayList<>();
+        employeeRepository.findAll().forEach(
+                (employee) ->
+                {
+                    result.add(convertToEmployeeDTO(employee));
+                }
+        );
+        return result;
+    }
 }

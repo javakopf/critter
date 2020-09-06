@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,12 +19,10 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
-    private final PetService petService;
 
     @Autowired
     public UserController(UserService userService,PetService petService) {
         this.userService = userService;
-        this.petService = petService;
     }
 
     @PostMapping("/customer")
@@ -48,7 +45,7 @@ public class UserController {
         return userService.createNewEmployee(employeeDTO);
     }
 
-    @PostMapping("/employee/{employeeId}")
+    @GetMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
         return userService.getEmployee(employeeId);
     }
@@ -66,4 +63,9 @@ public class UserController {
      return employeeDTOS;
     }
 
+    @GetMapping("/employee/all")
+    public List<EmployeeDTO> getAllEmployees() {
+        List<EmployeeDTO> employeeDTOS = userService.getAllEmployees();
+        return employeeDTOS;
+    }
 }

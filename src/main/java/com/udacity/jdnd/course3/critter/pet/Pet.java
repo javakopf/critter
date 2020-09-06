@@ -1,16 +1,21 @@
 package com.udacity.jdnd.course3.critter.pet;
 
-import com.udacity.jdnd.course3.critter.schedule.Schedule;
 import com.udacity.jdnd.course3.critter.user.Customer;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Pet {
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
 
@@ -29,6 +34,18 @@ public class Pet {
     public Pet() {
     }
 
+    public Pet(Long id, PetType type, Customer owner, String name, LocalDate birthDate, String notes) {
+        this.id = id;
+        this.type = type;
+        this.owner = owner;
+        this.name = name;
+        this.birthDate = birthDate;
+        this.notes = notes;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;

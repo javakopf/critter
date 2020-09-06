@@ -15,7 +15,8 @@ import java.util.Set;
 @Entity
 @Table(name = "schedule")
 public class Schedule {
-    @GeneratedValue
+
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private long id;
 

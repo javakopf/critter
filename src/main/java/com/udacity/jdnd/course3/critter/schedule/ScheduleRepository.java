@@ -14,15 +14,12 @@ import java.util.List;
 @Repository
 @Transactional
 public interface ScheduleRepository extends JpaRepository<Schedule,Long> {
-    List<Schedule> findScheduleByEmployeesContains(Employee employee);
 
     List<Schedule> findScheduleByPetsIsContaining(Pet pet);
 
     @Query("select p from Schedule p where :employee member of p.employees")
     List<Schedule> findScheduleByEmployee(Employee employee);
 
-    @Query("select p from Schedule p where :pet member of p.pets")
-    List<Schedule> findScheduleByPet(Pet pet);
 
 
 }

@@ -23,13 +23,19 @@ public class PetService {
     }
 
     public PetDTO addNewPet(PetDTO petDTO){
-        Pet pet = convertToEntity(petDTO);
-        Customer customer = customerRepository.findById(petDTO.getOwnerId()).get();
-        pet.setOwner(customer);
-        pet = petRepository.save(pet);
-        customer.getPets().add(pet);
-        customerRepository.save(customer);
-        return convertToDTO(pet);
+        if(petDTO.getOwnerId() != 0 ){
+            Pet pet = convertToEntity(petDTO);
+            Optional<Customer> customerOpt = customerRepository.findById(petDTO.getOwnerId());
+            if(customerOpt.isPresent()){
+                Customer customer = customerOpt.get();
+                pet.setOwner(customer);
+                Pet newPet = petRepository.save(pet);
+                customer.getPets().add(newPet);
+                customerRepository.save(customer);
+                return convertToDTO(newPet);
+            }
+        }
+        return null;
     }
 
     private PetDTO convertToDTO(Pet pet) {
