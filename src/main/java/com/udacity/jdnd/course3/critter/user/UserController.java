@@ -1,8 +1,11 @@
 package com.udacity.jdnd.course3.critter.user;
 
+import com.udacity.jdnd.course3.critter.pet.PetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,39 +19,51 @@ import java.util.Set;
 @RequestMapping("/user")
 public class UserController {
 
+    private final UserService userService;
+    private final PetService petService;
+
+    @Autowired
+    public UserController(UserService userService,PetService petService) {
+        this.userService = userService;
+        this.petService = petService;
+    }
+
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
-        throw new UnsupportedOperationException();
+      return  userService.createNewCustomer(customerDTO);
     }
 
     @GetMapping("/customer")
     public List<CustomerDTO> getAllCustomers(){
-        throw new UnsupportedOperationException();
+        return  userService.getAllCustomers();
     }
 
     @GetMapping("/customer/pet/{petId}")
     public CustomerDTO getOwnerByPet(@PathVariable long petId){
-        throw new UnsupportedOperationException();
+        return userService.getOwnerByPetId(petId);
     }
 
     @PostMapping("/employee")
     public EmployeeDTO saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
-        throw new UnsupportedOperationException();
+        return userService.createNewEmployee(employeeDTO);
     }
 
     @PostMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+        return userService.getEmployee(employeeId);
     }
 
     @PutMapping("/employee/{employeeId}")
     public void setAvailability(@RequestBody Set<DayOfWeek> daysAvailable, @PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+         EmployeeDTO employeeDTO = userService.getEmployee(employeeId);
+         employeeDTO.setDaysAvailable(daysAvailable);
+         userService.updateEmployee(employeeDTO);
     }
 
     @GetMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
-        throw new UnsupportedOperationException();
+     List<EmployeeDTO> employeeDTOS = userService.getEmployeeBySills(employeeDTO.getSkills());
+     return employeeDTOS;
     }
 
 }
