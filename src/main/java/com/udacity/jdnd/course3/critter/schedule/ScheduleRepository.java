@@ -24,4 +24,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> {
     @Query("select p from Schedule p where :pet member of p.pets")
     List<Schedule> findScheduleByPet(Pet pet);
 
+
 }

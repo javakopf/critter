@@ -82,6 +82,7 @@ public class ScheduleService {
         }
         return new ArrayList<>();
     }
+
     private List<ScheduleDTO> convertSchedulesDtoList(Iterable<Schedule> schedules){
         List<ScheduleDTO> result = new ArrayList<>();
         schedules.forEach(schedule -> result.add(convertToScheduleDTO(schedule)));

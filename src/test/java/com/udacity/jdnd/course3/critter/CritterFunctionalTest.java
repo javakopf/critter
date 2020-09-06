@@ -212,6 +212,10 @@ public class CritterFunctionalTest {
             schedule 1, we should get both the first and third schedule as our result.
          */
 
+        //Pet 1 is only in schedule 1
+        List<ScheduleDTO> scheds1p = scheduleController.getScheduleForPet(sched1.getPetIds().get(0));
+        compareSchedules(sched1, scheds1p.get(0));
+
         //Employee 1 in is both schedule 1 and 3
         List<ScheduleDTO> scheds1e = scheduleController.getScheduleForEmployee(sched1.getEmployeeIds().get(0));
         compareSchedules(sched1, scheds1e.get(0));
@@ -221,9 +225,6 @@ public class CritterFunctionalTest {
         List<ScheduleDTO> scheds2e = scheduleController.getScheduleForEmployee(sched2.getEmployeeIds().get(0));
         compareSchedules(sched2, scheds2e.get(0));
 
-        //Pet 1 is only in schedule 1
-        List<ScheduleDTO> scheds1p = scheduleController.getScheduleForPet(sched1.getPetIds().get(0));
-        compareSchedules(sched1, scheds1p.get(0));
 
         //Pet from schedule 2 is in both schedules 2 and 3
         List<ScheduleDTO> scheds2p = scheduleController.getScheduleForPet(sched2.getPetIds().get(0));

@@ -1,11 +1,13 @@
 package com.udacity.jdnd.course3.critter.user;
 
-import com.udacity.jdnd.course3.critter.schedule.Schedule;
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,10 +24,6 @@ public class Employee {
 
     @ElementCollection
     private Set<DayOfWeek> daysAvailable;
-
-    @ManyToMany
-    private List<Schedule> schedules = new ArrayList<>();
-
 
     public Set<EmployeeSkill> getSkills() {
         return skills;

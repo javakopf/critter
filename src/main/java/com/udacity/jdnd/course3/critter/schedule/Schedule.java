@@ -21,10 +21,10 @@ public class Schedule {
 
     private LocalDate date;
 
-    @ManyToMany(mappedBy="schedules")
+    @ManyToMany
     private List<Employee> employees = new ArrayList<>();
 
-    @ManyToMany(mappedBy="schedules")
+    @ManyToMany
     private List<Pet> pets = new ArrayList<>();
     @ElementCollection(targetClass = EmployeeSkill.class)
     @Enumerated(EnumType.STRING)

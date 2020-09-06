@@ -25,8 +25,6 @@ public class Pet {
     private LocalDate birthDate;
     private String notes;
 
-    @ManyToMany
-    private List<Schedule> schedules = new ArrayList<>();
 
     public Pet() {
     }
@@ -76,15 +74,5 @@ public class Pet {
         this.notes = notes;
     }
 
-    public List<Schedule> getSchedules() {
-        return schedules;
-    }
 
-    public void setSchedules(List<Schedule> schedules) {
-        this.schedules = schedules;
-    }
-
-    public void addSchedules(Schedule schedule) {
-        this.schedules.add(schedule);
-    }
 }

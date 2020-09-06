@@ -30,7 +30,7 @@ public class ScheduleController {
     }
 
 
-    @PostMapping
+    @PutMapping
     public ScheduleDTO createSchedule(@RequestBody ScheduleDTO scheduleDTO) {
          ScheduleDTO result = scheduleService.createNewSchedule(scheduleDTO);
          return result;
