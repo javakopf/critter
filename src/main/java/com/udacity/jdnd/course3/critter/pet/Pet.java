@@ -15,7 +15,7 @@ import java.time.LocalDate;
 
 @Entity
 public class Pet {
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
@@ -23,7 +23,7 @@ public class Pet {
     @Column(length = 8)
     private PetType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Customer owner;
 
     private String name;

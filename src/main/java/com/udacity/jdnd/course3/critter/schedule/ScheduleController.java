@@ -19,44 +19,48 @@ import java.util.List;
 public class ScheduleController {
 
     private ScheduleService scheduleService;
-    private PetService petService;
+    private ScheduleConverter scheduleConverter;
     private UserService userServiceService;
 
     @Autowired
-    public ScheduleController(ScheduleService scheduleService, PetService petService, UserService userServiceService) {
+    public ScheduleController(ScheduleService scheduleService, ScheduleConverter scheduleConverter, UserService userServiceService) {
         this.scheduleService = scheduleService;
-        this.petService = petService;
+        this.scheduleConverter = scheduleConverter;
         this.userServiceService = userServiceService;
     }
 
 
     @PutMapping
     public ScheduleDTO createSchedule(@RequestBody ScheduleDTO scheduleDTO) {
-         ScheduleDTO result = scheduleService.createNewSchedule(scheduleDTO);
-         return result;
+         Schedule schedule = scheduleService.createNewSchedule(
+                 scheduleConverter.convertToScheduleEntity(scheduleDTO),
+                 scheduleDTO.getEmployeeIds(),
+                 scheduleDTO.getPetIds());
+         return scheduleConverter.convertToScheduleDTO(schedule);
     }
 
 
     @GetMapping
     public List<ScheduleDTO> getAllSchedules() {
-        return scheduleService.getAllSchedules();
+        List<Schedule> allSchedules = scheduleService.getAllSchedules();
+        return scheduleConverter.convertSchedulesDtoList(allSchedules);
     }
 
     @GetMapping("/pet/{petId}")
     public List<ScheduleDTO> getScheduleForPet(@PathVariable long petId) {
-        return scheduleService.getScheduleByPetId(petId);
+       return scheduleConverter.convertSchedulesDtoList( scheduleService.getScheduleByPetId(petId));
     }
 
     @GetMapping("/employee/{employeeId}")
     public List<ScheduleDTO> getScheduleForEmployee(@PathVariable long employeeId) {
-        return scheduleService.getScheduleByEmployeeId(employeeId);
+        return scheduleConverter.convertSchedulesDtoList(scheduleService.getScheduleByEmployeeId(employeeId));
     }
 
     @GetMapping("/customer/{customerId}")
     public List<ScheduleDTO> getScheduleForCustomer(@PathVariable long customerId) {
         List<Pet> pets = userServiceService.getPetsForCustomer(customerId);
         List<ScheduleDTO> scheduleDTOS = new ArrayList<>();
-        pets.forEach(pet -> scheduleDTOS.addAll(scheduleService.getScheduleByPetId(pet.getId())));
+        pets.forEach(pet -> scheduleDTOS.addAll(scheduleConverter.convertSchedulesDtoList(scheduleService.getScheduleByPetId(pet.getId())) ));
         return scheduleDTOS;
     }
 

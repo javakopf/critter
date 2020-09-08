@@ -16,7 +16,7 @@ import java.util.Set;
 @Table(name = "schedule")
 public class Schedule {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private long id;
 
@@ -27,6 +27,7 @@ public class Schedule {
 
     @ManyToMany
     private List<Pet> pets = new ArrayList<>();
+
     @ElementCollection(targetClass = EmployeeSkill.class)
     @Enumerated(EnumType.STRING)
     private Set<EmployeeSkill> activities;

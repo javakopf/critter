@@ -1,80 +1,60 @@
 package com.udacity.jdnd.course3.critter.pet;
 
 import com.udacity.jdnd.course3.critter.user.Customer;
-import com.udacity.jdnd.course3.critter.user.CustomerDTO;
-import com.udacity.jdnd.course3.critter.user.CustomerRepository;
-import org.springframework.beans.BeanUtils;
+import com.udacity.jdnd.course3.critter.user.UserService;
+import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class PetService {
-    private PetRepository petRepository;
-    private CustomerRepository customerRepository;
+    private final PetRepository petRepository;
+    private final UserService customerService;
 
     @Autowired
-    public PetService(PetRepository petRepository,CustomerRepository customerRepository) {
+    public PetService(PetRepository petRepository,UserService customerService) {
         this.petRepository = petRepository;
-        this.customerRepository = customerRepository;
+        this.customerService = customerService;
     }
 
-    public PetDTO addNewPet(PetDTO petDTO){
-        if(petDTO.getOwnerId() != 0 ){
-            Pet pet = convertToEntity(petDTO);
-            Optional<Customer> customerOpt = customerRepository.findById(petDTO.getOwnerId());
-            if(customerOpt.isPresent()){
-                Customer customer = customerOpt.get();
+    public Pet addNewPet(Pet pet,long ownerId){
+        if(ownerId != 0 ){
+            Customer customer =customerService.getCustomerById(ownerId);
+            if(customer!=null){
                 pet.setOwner(customer);
-                Pet newPet = petRepository.save(pet);
-                customer.getPets().add(newPet);
-                customerRepository.save(customer);
-                return convertToDTO(newPet);
+                pet = petRepository.save(pet);
+                if(!customer.getPets().contains(pet)){
+                    customer.addPet(pet);
+                    customerService.updateCustomer(customer);
+                }
+                return pet;
             }
         }
         return null;
     }
 
-    private PetDTO convertToDTO(Pet pet) {
-        PetDTO petDTO = new PetDTO();
-        BeanUtils.copyProperties(pet,petDTO);
-        petDTO.setOwnerId(pet.getOwner().getId());
-        return petDTO;
-    }
 
-    private Pet convertToEntity(PetDTO petDTO) {
-        Pet pet = new Pet();
-        BeanUtils.copyProperties(petDTO,pet);
-        return pet;
-    }
-
-    public PetDTO getPet(long petId) {
+    public Pet getPet(long petId) {
         Optional<Pet> petOpt = petRepository.findById(petId);
         if(petOpt.isPresent()){
-            Pet pet = petOpt.get();
-            return convertToDTO(pet);
+            return petOpt.get();
         }
-        return new PetDTO();
+        return null;
+    }
+    public List<Pet> getPetsByOwner(long ownerId) {
+        Customer customer = customerService.getCustomerById(ownerId);
+        if(customer == null){
+            return Lists.emptyList();
+        }
+        return customer.getPets();
     }
 
-    public List<PetDTO> getPetsByOwner(long ownerId) {
-      Customer customer = customerRepository.findById(ownerId).get();
-      List<PetDTO> pets = new ArrayList<>();
-        customer.getPets().forEach(
-                (pet) -> {
-                    pets.add(convertToDTO(pet));
-                }
-        );
-      return pets;
-    }
-
-
-    public List<PetDTO> getAllPets() {
-        List<PetDTO> pets = new ArrayList<>();
-        petRepository.findAll().forEach(pet ->pets.add(convertToDTO(pet)) );
-        return pets;
+    public List<Pet> getAllPets() {
+        return  petRepository.findAll();
     }
 }

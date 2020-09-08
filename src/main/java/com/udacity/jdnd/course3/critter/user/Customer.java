@@ -10,7 +10,7 @@ import java.util.List;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String phoneNumber;
@@ -22,18 +22,7 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(Long id,String name){
-        this.id = id;
-        this.name = name;
-    }
 
-    public Customer(Long id, String name, String phoneNumber, String notes, List<Pet> pets) {
-        this.id = id;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.notes = notes;
-        this.pets = pets;
-    }
 
     public Long getId() {
         return id;
@@ -73,6 +62,15 @@ public class Customer {
 
     public void setPets(List<Pet> pets) {
         this.pets = pets;
+    }
+    public void addPet(Pet pet) {
+        pets.add(pet);
+        pet.setOwner(this);
+    }
+
+    public void removePet(Pet pet) {
+        pets.remove(pet);
+        pet.setOwner(null);
     }
 
     @Override

@@ -2,13 +2,18 @@ package com.udacity.jdnd.course3.critter.user;
 
 import com.udacity.jdnd.course3.critter.pet.Pet;
 import com.udacity.jdnd.course3.critter.pet.PetRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.sql.Date;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@Transactional
 public class UserService {
 
     private CustomerRepository customerRepository;
@@ -24,117 +29,54 @@ public class UserService {
     }
 
 
-    public CustomerDTO createNewCustomer(CustomerDTO customerDTO) {
-        Customer customer = convertToEntity(customerDTO);
+    public Customer createNewCustomer(Customer customer) {
         customer = this.customerRepository.save(customer);
-        CustomerDTO customerDTO1 = this.convertToDTO(customer);
-        return customerDTO1;
-    }
-
-    private CustomerDTO convertToDTO(Customer customer) {
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setId(customer.getId());
-        customerDTO.setName(customer.getName());
-        customerDTO.setNotes(customer.getNotes());
-        customerDTO.setPhoneNumber(customer.getPhoneNumber());
-        List<Long> petIds = new ArrayList<>();
-        customer.getPets().forEach((pet) -> {
-            petIds.add(pet.getId());
-        });
-        customerDTO.setPetIds(petIds);
-        return customerDTO;
-    }
-
-
-    private Customer convertToEntity(CustomerDTO customerDTO) {
-        Customer customer = null;
-        if (customerDTO.getId() > 0) {
-            customer = new Customer(customerDTO.getId(), customerDTO.getName());
-        } else {
-            customer = new Customer();
-            customer.setName(customerDTO.getName());
-            customer.setPhoneNumber(customerDTO.getPhoneNumber());
-            customer.setNotes(customerDTO.getNotes());
-            List<Pet> pets = new ArrayList<>();
-            if (customerDTO.getPetIds() != null && !customerDTO.getPetIds().isEmpty()) {
-                customerDTO.getPetIds().forEach(
-                        (petId) -> {
-                            pets.add(petRepository.findById(petId).get());
-                        }
-                );
-            }
-            customer.setPets(pets);
-        }
         return customer;
     }
 
 
-    public List<CustomerDTO> getAllCustomers() {
-        List<CustomerDTO> customersDTO = new ArrayList<>();
+    public List<Customer> getAllCustomers() {
         List<Customer> customers = (List<Customer>) customerRepository.findAll();
-        customers.forEach(
-                (customer) -> {
-                    customersDTO.add(convertToDTO(customer));
-                }
-        );
-        return customersDTO;
+        return customers;
     }
 
-    public EmployeeDTO createNewEmployee(EmployeeDTO employeeDTO) {
-        Employee employee = convertToEmployeeEntity(employeeDTO);
-        employee = this.employeeRepository.save(employee);
-        return this.convertToEmployeeDTO(employee);
+
+    public Employee createNewEmployee(Employee employee) {
+        return this.employeeRepository.save(employee);
     }
 
-    private Employee convertToEmployeeEntity(EmployeeDTO employeeDTO) {
-        Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO,employee);
-        return  employee;
-    }
-
-    private EmployeeDTO convertToEmployeeDTO(Employee employee) {
-        EmployeeDTO employeeDTO = new EmployeeDTO();
-        BeanUtils.copyProperties(employee,employeeDTO);
-        return  employeeDTO;
-    }
-
-    public EmployeeDTO getEmployee(long employeeId) {
+    public Employee getEmployee(long employeeId) {
         Employee employee = employeeRepository.findById(employeeId).get();
-        return convertToEmployeeDTO(employee);
+        return employee;
     }
 
-    public CustomerDTO getOwnerByPetId(long petId) {
-        CustomerDTO  result = null;
+    public Customer getOwnerByPetId(long petId) {
+        Customer customer = null;
         Optional<Pet> petOpt = petRepository.findById(petId);
         if(petOpt.isPresent()){
-            Customer customer = petOpt.get().getOwner();
-            result = convertToDTO(customer);
+             customer = petOpt.get().getOwner();
         }
-        return result;
+        return customer;
     }
 
-    public void updateEmployee(EmployeeDTO employeeDTO) {
-        Optional<Employee> employeeOpt = employeeRepository.findById(employeeDTO.getId());
-        if(employeeOpt.isPresent()){
-            Employee employee = convertToEmployeeEntity(employeeDTO);
-            employee = this.employeeRepository.save(employee);
-            employeeDTO = convertToEmployeeDTO(employee);
-        }
+    public Employee updateEmployee(Employee employee) {
+         employee = this.employeeRepository.save(employee);
+        return employee;
     }
 
-    public List<EmployeeDTO> getEmployeeBySills(Set<EmployeeSkill> skills) {
-        List<EmployeeDTO> result = new ArrayList<>();
+    public List<Employee> getEmployeeBySkills(Set<EmployeeSkill> skills, LocalDate dayOfWeek) {
+        List<Employee> result = new ArrayList<>();
         Iterable<Employee> employees = employeeRepository.findAll();
         employees.forEach(
                 (employee) ->
                 {
-                    if(employee.getSkills().containsAll(skills))
+                    if(employee.getSkills().containsAll(skills) &&
+                            employee.getDaysAvailable().contains(dayOfWeek.getDayOfWeek()))
                     {
-                        result.add(convertToEmployeeDTO(employee));
+                        result.add(employee);
                     }
                 }
         );
-
         return result;
     }
 
@@ -146,14 +88,36 @@ public class UserService {
         return new ArrayList<>();
     }
 
-    public List<EmployeeDTO> getAllEmployees() {
-        List<EmployeeDTO> result = new ArrayList<>();
+    public List<Employee> getAllEmployees() {
+        List<Employee> result = new ArrayList<>();
         employeeRepository.findAll().forEach(
                 (employee) ->
                 {
-                    result.add(convertToEmployeeDTO(employee));
+                    result.add(employee);
                 }
         );
         return result;
+    }
+
+    public void addPetToCustomer(Customer customer, Pet pet) {
+        List<Pet> pets = customer.getPets();
+        if (pets == null) {
+            pets = new ArrayList<>();
+        }
+        pets.add(pet);
+        customer.setPets(pets);
+        customerRepository.save(customer);
+    }
+
+    public Customer getCustomerById(Long ownerId) {
+        Optional<Customer> customerOpt = customerRepository.findById(ownerId);
+        if(customerOpt.isPresent()){
+            return customerOpt.get();
+        }
+        return null;
+    }
+
+    public void updateCustomer(Customer customer) {
+        customerRepository.save(customer);
     }
 }

@@ -42,6 +42,7 @@ public class CritterFunctionalTest {
     @Autowired
     private ScheduleController scheduleController;
 
+
     @Test
     public void testCreateCustomer(){
         CustomerDTO customerDTO = createCustomerDTO();
